@@ -54,7 +54,7 @@ public class TowerEssentials : MonoBehaviour {
             GameObject last = enemiesInSight[0];
             foreach(GameObject e in enemiesInSight)
             {
-                if (e.GetComponent<EnemyBasics>().GetDistance() < last.GetComponent<EnemyBasics>().GetDistance())
+                if (e.GetComponent<EnemyBasics>().GetDistance() > last.GetComponent<EnemyBasics>().GetDistance()) //Shoot at enemy closest to end
                     last = e;
             }
             bul.GetComponent<BulletEssentials>().SetVariables(damage, bulletSpeed, last);
