@@ -3,10 +3,10 @@ using System.Collections;
 
 public class BulletEssentials : MonoBehaviour {
 
-    float damage;
-    float speed;
-    GameObject target;
-    Vector3 newPosition;
+    protected float damage;
+    protected float speed;
+    protected GameObject target;
+    protected Vector3 newPosition;
 
 
 	// Use this for initialization
@@ -34,11 +34,11 @@ public class BulletEssentials : MonoBehaviour {
         if (other.tag == "Enemy")
         {
             OnHit();
-            
+            ExtraTrigger(other);
         }
     }
 
-    void MoveTowardsTarget()
+    protected void MoveTowardsTarget()
     {
         if (target != null)
         {
@@ -49,7 +49,7 @@ public class BulletEssentials : MonoBehaviour {
         {
             transform.position = Vector2.MoveTowards(transform.position, newPosition, speed);
             if (transform.position == newPosition)
-                Destroy(gameObject);
+                OnHit();
         }
     }
 
@@ -58,5 +58,10 @@ public class BulletEssentials : MonoBehaviour {
         if (target != null)
             target.GetComponent<EnemyBasics>().DealDamage(damage);
         Destroy(gameObject);
+    }
+
+    protected virtual void ExtraTrigger(Collider2D other)
+    {
+
     }
 }

@@ -13,13 +13,14 @@ public class EnemyBasics : MonoBehaviour {
 	void Start ()
     {
         health = totalHealth;
+        ImportantStats.enemyCount++;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
         if (index < LevelPath.path.Length) FollowPath();
-        if (health <= 0) Destroy(gameObject);
+        if (health <= 0) { ImportantStats.enemyCount--; Destroy(gameObject); }
 	}
 
     void FollowPath()
