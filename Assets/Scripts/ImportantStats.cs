@@ -5,13 +5,14 @@ using Text = UnityEngine.UI.Text;
 public class ImportantStats : MonoBehaviour {
 
     public static int gold;
+    public int startingGold;
     public static int enemyCount;
     static Text goldText;
 
 	// Use this for initialization
 	void Start ()
     {
-        gold = 100;
+        gold = startingGold;
         goldText = GameObject.FindGameObjectWithTag("Gold Text").GetComponent<Text>();
 	}
 	
