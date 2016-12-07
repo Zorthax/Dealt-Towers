@@ -16,7 +16,7 @@ public class GoldTower : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (delay < goldDelay) delay += Time.deltaTime;
+        if (delay < goldDelay) delay += ImportantStats.deltaTime;
         else
         {
             delay = 0;

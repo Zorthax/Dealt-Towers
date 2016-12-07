@@ -49,12 +49,12 @@ public class EnemySpawnerScript : MonoBehaviour {
 
         public void Update()
         {
-            waveLength -= Time.deltaTime;
+            waveLength -= ImportantStats.deltaTime;
             foreach(Burst e in enemyGroups) //All groups at the same time
             if (e.spawnCount > 0) //If no enemies are left, skip all code
             {
-                if (e.timeUntilStart > 0) e.timeUntilStart -= Time.deltaTime; //Delay before starting time (once per burst)
-                else if (e.getTimer() < e.timeBetweenEnemies) e.setTimer(e.getTimer() + Time.deltaTime); //Delay between enemies
+                if (e.timeUntilStart > 0) e.timeUntilStart -= ImportantStats.deltaTime; //Delay before starting time (once per burst)
+                else if (e.getTimer() < e.timeBetweenEnemies) e.setTimer(e.getTimer() + ImportantStats.deltaTime); //Delay between enemies
                 else                                                            //Spawn enemy
                 {
                     e.setTimer(0);

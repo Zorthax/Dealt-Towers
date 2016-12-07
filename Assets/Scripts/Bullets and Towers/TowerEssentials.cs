@@ -10,14 +10,15 @@ public class TowerEssentials : MonoBehaviour {
     public float radius;
     float delayTimer = 0;
 
-    bool showRadius = true;
+    public bool selected = false;
     GameObject radiusCircle;
     GameObject[] enemiesInSight;
 
 	// Use this for initialization
 	void Start ()
     {
-	
+        delayTimer = delayBetweenShots;
+        selected = true;
 	}
 	
 	// Update is called once per frame
@@ -31,22 +32,26 @@ public class TowerEssentials : MonoBehaviour {
 
     void DrawRadius()
     {
-        if (showRadius && radiusCircle == null)
+        if (selected && radiusCircle == null)
         {
             radiusCircle = Instantiate(Resources.Load("Radius")) as GameObject;
             radiusCircle.transform.parent = transform;
             radiusCircle.transform.localPosition = Vector3.zero;
             radiusCircle.transform.localScale = new Vector3(radius, radius, radius);
         }
-        else if (!showRadius && radiusCircle != null)
+        else if (!selected && radiusCircle != null)
         {
-            Destroy(radiusCircle);
+            radiusCircle.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
+        }
+        else if (selected && radiusCircle != null)
+        {
+            radiusCircle.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
         }
     }
 
     void Shooting()
     {
-        if (delayTimer > 0) delayTimer -= Time.deltaTime;
+        if (delayTimer > 0) delayTimer -= ImportantStats.deltaTime;
 
         else if (enemiesInSight != null)
         {

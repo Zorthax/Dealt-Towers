@@ -25,8 +25,8 @@ public class EnemyBasics : MonoBehaviour {
 
     void FollowPath()
     {
-        distance += Time.deltaTime * speed;
-        transform.position = Vector3.MoveTowards(transform.position, LevelPath.path[index], speed);
+        distance += ImportantStats.deltaTime * speed;
+        transform.position = Vector3.MoveTowards(transform.position, LevelPath.path[index], ImportantStats.speed * speed);
         if (transform.position == LevelPath.path[index]) index++;
     }
 

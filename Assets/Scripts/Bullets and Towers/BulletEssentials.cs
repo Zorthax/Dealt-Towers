@@ -42,12 +42,12 @@ public class BulletEssentials : MonoBehaviour {
     {
         if (target != null)
         {
-            transform.position = Vector2.MoveTowards(transform.position, target.transform.position, speed);
+            transform.position = Vector2.MoveTowards(transform.position, target.transform.position, ImportantStats.speed * speed);
             newPosition = target.transform.position;
         }
         else
         {
-            transform.position = Vector2.MoveTowards(transform.position, newPosition, speed);
+            transform.position = Vector2.MoveTowards(transform.position, newPosition, ImportantStats.speed * speed);
             if (transform.position == newPosition)
                 OnHit();
         }

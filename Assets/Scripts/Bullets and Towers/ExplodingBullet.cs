@@ -25,7 +25,7 @@ public class ExplodingBullet : BulletEssentials {
 
     void LateUpdate()
     {
-        if (transform.localScale.x == explosionRadius && timer > 0) timer -= Time.deltaTime;
+        if (transform.localScale.x == explosionRadius && timer > 0) timer -= ImportantStats.deltaTime;
         else if (transform.localScale.x == explosionRadius) Destroy(gameObject);
     }
 }

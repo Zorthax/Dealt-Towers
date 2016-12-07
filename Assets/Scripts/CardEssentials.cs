@@ -7,6 +7,7 @@ public class CardEssentials : MonoBehaviour {
     public GameObject tower;
     public bool goldTower;
     public static bool goldPlaced;
+    public UnityEngine.UI.Text goldCost;
 
 	// Use this for initialization
 	void Start ()
@@ -22,5 +23,7 @@ public class CardEssentials : MonoBehaviour {
             cost = Mathf.FloorToInt(cost * 1.5f);
             goldPlaced = false;
         }
+
+        goldCost.text = cost.ToString();
 	}
 }
