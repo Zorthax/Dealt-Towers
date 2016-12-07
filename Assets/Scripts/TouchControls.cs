@@ -26,19 +26,19 @@ public class TouchControls : MonoBehaviour {
             CheckAllCollisions();
         }
         
+        if (Input.GetMouseButton(0))
+        {
+            DragTower();
+        }
 
     }
 
-    void LateUpdate()
+    void DragTower()
     {
-        
-        overrideMap = false;
-        map = false;
-
-        //if (Input.GetMouseButtonUp(0))
-        //{
-        //    transform.position = new Vector3(-10, -10, 0);
-        //}
+        if (selectedTower != null && IsSpotSafeForTower())
+        {
+            selectedTower.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0, 0, 1);
+        }
     }
 
     void Deselection()
@@ -58,7 +58,7 @@ public class TouchControls : MonoBehaviour {
     
     void CreateTower()
     {
-        if (tower != null)
+        if (tower != null && IsSpotSafeForTower())
         {
             selectedTower = Instantiate(tower, transform.position, new Quaternion(0, 0, 0, 1)) as GameObject;
             ImportantStats.gold -= cost;
@@ -67,6 +67,7 @@ public class TouchControls : MonoBehaviour {
             cost = 0;
         }
     }
+
 
     void CheckAllCollisions()
     {
@@ -78,7 +79,8 @@ public class TouchControls : MonoBehaviour {
                 if (col.tag == "Tower")
                 {
                     Deselection();
-                    col.GetComponent<TowerEssentials>().selected = true;
+                    TowerEssentials t = col.GetComponent<TowerEssentials>();
+                    if (t != null) t.selected = true;
                     selectedTower = col.gameObject;
                     MoveSelector();
                     solved = true;
@@ -140,5 +142,17 @@ public class TouchControls : MonoBehaviour {
                     solved = true;
                 }
             }
+    }
+
+    bool IsSpotSafeForTower()
+    {
+        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0, 0, 1);
+        Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, 0.01f);
+        foreach (Collider2D col in collisions)
+        {
+            if (col.tag == "Path" || col.tag == "Card" || col.tag == "Pause" || col.tag == "FastForward")
+                return false;
+        }
+        return true;
     }
 }
