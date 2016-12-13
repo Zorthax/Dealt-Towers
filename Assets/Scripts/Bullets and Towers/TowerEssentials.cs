@@ -38,6 +38,7 @@ public class TowerEssentials : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        CheckCollision();
         CheckIfEnemyIsDead();
         DrawRadius();
         if (!pickedUp && !onPath) Shooting();
@@ -161,14 +162,26 @@ public class TowerEssentials : MonoBehaviour {
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void CheckCollision()
     {
-        if (other.tag == "Path") onPath = true;
-    }
+        onPath = false;
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, transform.localScale.x / 5, new Vector2(0, 0));
+        foreach(RaycastHit2D h in hits)
+        {
+            if (h.transform.tag == "Path" || h.transform.tag == "Pause" ||
+            h.transform.tag == "FastForward" || h.transform.tag == "Card")
+            {
+                onPath = true;
+                break;
+            }
 
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.tag == "Path") onPath = false;
+            if (h.transform.tag == "Tower" && h.transform != transform)
+            {
+                onPath = true;
+                break;
+            }
+
+        }
     }
 
     void Placeable()
