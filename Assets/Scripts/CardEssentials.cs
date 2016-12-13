@@ -9,13 +9,15 @@ public class CardEssentials : MonoBehaviour {
     public static bool goldPlaced;
     public UnityEngine.UI.Text goldCost;
     public bool selected;
-    static float selectionScale = 1.5f;
+    static float selectionScale = 1.3f;
     Vector3 regularScale;
+    SpriteRenderer rend;
 
 	// Use this for initialization
 	void Start ()
     {
         regularScale = transform.localScale;
+        rend = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
@@ -30,8 +32,16 @@ public class CardEssentials : MonoBehaviour {
         goldCost.text = cost.ToString();
 
         if (selected)
+        {
             transform.localScale = regularScale * selectionScale;
+            rend.sortingOrder = 10;
+            goldCost.canvas.sortingOrder = 10;
+        }
         else
+        {
             transform.localScale = regularScale;
+            rend.sortingOrder = 1;
+            goldCost.canvas.sortingOrder = 1;
+        }
 	}
 }

@@ -40,6 +40,7 @@ public class TouchControls : MonoBehaviour {
                 Deselection();
             else if (selectedTower != null)
                 selectedTower.GetComponent<TowerEssentials>().pickedUp = false;
+            dragTimer = dragDelay;
         }
 
     }
@@ -112,7 +113,7 @@ public class TouchControls : MonoBehaviour {
                     dragTimer = dragDelay;
                 }
             }
-
+        
         if (!solved) foreach (Collider2D col in collisions)
             {
                 if (col.tag == "Pause")

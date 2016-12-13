@@ -22,6 +22,8 @@ public class TowerEssentials : MonoBehaviour {
     GameObject radiusCircle;
     GameObject[] enemiesInSight;
 
+    public bool randomShooting;
+
     public bool goldTower;
     public int goldProduced;
     public float goldDelay;
@@ -70,11 +72,11 @@ public class TowerEssentials : MonoBehaviour {
             radiusCircle.transform.localPosition = Vector3.zero;
             radiusCircle.transform.localScale = new Vector3(radius, radius, radius);
         }
-        else if (!selected && radiusCircle != null)
+        else if (!pickedUp && !selected && radiusCircle != null)
         {
             radiusCircle.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
         }
-        else if (selected && radiusCircle != null)
+        else if (!pickedUp && selected && radiusCircle != null)
         {
             radiusCircle.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
         }
@@ -88,10 +90,17 @@ public class TowerEssentials : MonoBehaviour {
         {
             GameObject bul = Instantiate(bullet, transform.position, new Quaternion(0, 0, 0, 1)) as GameObject;
             GameObject last = enemiesInSight[0];
-            foreach(GameObject e in enemiesInSight)
+            if (randomShooting)
             {
-                if (e.GetComponent<EnemyBasics>().GetDistance() > last.GetComponent<EnemyBasics>().GetDistance()) //Shoot at enemy closest to end
-                    last = e;
+                last = enemiesInSight[Random.Range(0, enemiesInSight.Length - 1)];
+            }
+            else 
+            {
+                foreach (GameObject e in enemiesInSight)
+                {
+                    if (e.GetComponent<EnemyBasics>().GetDistance() > last.GetComponent<EnemyBasics>().GetDistance()) //Shoot at enemy closest to end
+                        last = e;
+                }
             }
             bul.GetComponent<BulletEssentials>().SetVariables(damage, bulletSpeed, last);
             delayTimer = delayBetweenShots;
@@ -190,6 +199,7 @@ public class TowerEssentials : MonoBehaviour {
         {
             Color c = new Color(1, 0, 0, 1);
             GetComponent<SpriteRenderer>().color = c;
+            radiusCircle.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0, 0.5f);
             placeTimer = placeDelay;
         }
         if (!selected && onPath) //Either reset position or destroy self when placed on path
@@ -211,16 +221,29 @@ public class TowerEssentials : MonoBehaviour {
                 placeTimer -= Time.deltaTime;
             }
         }
-        if (!onPath) //Set last position
+        if (!pickedUp && !onPath) //Set last position
         {
             if (!costApplied)
             {
+                if (goldTower) CardEssentials.goldPlaced = true;
                 ImportantStats.gold -= cost;
                 costApplied = true;
             }
+            
             lastPosition = transform.position;
-            GetComponent<SpriteRenderer>().color = naturalColor;
             placeTimer = 0;
+        }
+
+        if (!onPath)
+        {
+            GetComponent<SpriteRenderer>().color = naturalColor;
+            lastPosition = transform.position;
+        }
+
+        if (pickedUp && !onPath)
+        {
+            GetComponent<SpriteRenderer>().color = new Color(0.6f, 0.6f, 1, 1);
+            radiusCircle.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0, 0.5f);
         }
     }
 
