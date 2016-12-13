@@ -3,16 +3,19 @@ using System.Collections;
 
 public class TouchControls : MonoBehaviour {
 
+    public float dragDelay = 0.75f;
     GameObject tower;
     int cost;
     bool overrideMap;
     bool map;
     GameObject selectedTower;
+    CardEssentials selectedCard;
+    float dragTimer;
 
 	// Use this for initialization
 	void Start ()
     {
-	
+        dragTimer = dragDelay;
 	}
 	
 	// Update is called once per frame
@@ -31,13 +34,27 @@ public class TouchControls : MonoBehaviour {
             DragTower();
         }
 
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (selectedTower != null && selectedTower.GetComponent<TowerEssentials>().onPath)
+                Deselection();
+            else if (selectedTower != null)
+                selectedTower.GetComponent<TowerEssentials>().pickedUp = false;
+        }
+
     }
 
     void DragTower()
     {
-        if (selectedTower != null && IsSpotSafeForTower())
+        if (selectedTower != null)
         {
-            selectedTower.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0, 0, 1);
+            if (dragTimer <= 0)
+            {
+                selectedTower.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0, 0, 1);
+                selectedTower.GetComponent<TowerEssentials>().pickedUp = true;
+            }
+            else
+                dragTimer -= Time.deltaTime;
         }
     }
 
@@ -46,8 +63,15 @@ public class TouchControls : MonoBehaviour {
         if (selectedTower != null)
         {
             TowerEssentials t = selectedTower.GetComponent<TowerEssentials>();
+            selectedTower.GetComponent<TowerEssentials>().pickedUp = false;
             if (t != null) t.selected = false;
             selectedTower = null;
+        }
+        if (selectedCard != null)
+        {
+            CardEssentials c = selectedCard.GetComponent<CardEssentials>();
+            if (c != null) c.selected = false;
+            selectedCard = null;
         }
     }
 
@@ -58,13 +82,14 @@ public class TouchControls : MonoBehaviour {
     
     void CreateTower()
     {
-        if (tower != null && IsSpotSafeForTower())
+        if (tower != null)
         {
             selectedTower = Instantiate(tower, transform.position, new Quaternion(0, 0, 0, 1)) as GameObject;
-            ImportantStats.gold -= cost;
+            selectedTower.GetComponent<TowerEssentials>().cost = cost;
             MoveSelector();
             tower = null;
             cost = 0;
+            dragTimer = 0;
         }
     }
 
@@ -84,6 +109,7 @@ public class TouchControls : MonoBehaviour {
                     selectedTower = col.gameObject;
                     MoveSelector();
                     solved = true;
+                    dragTimer = dragDelay;
                 }
             }
 
@@ -114,9 +140,10 @@ public class TouchControls : MonoBehaviour {
                 if (col.tag == "Card")
                 {
                     Deselection();
-                    CardEssentials script = col.GetComponent<CardEssentials>();
-                    tower = script.tower;
-                    cost = script.cost;
+                    selectedCard = col.GetComponent<CardEssentials>();
+                    tower = selectedCard.tower;
+                    cost = selectedCard.cost;
+                    selectedCard.selected = true;
                     overrideMap = true;
                     MoveSelector();
                     solved = true;
@@ -144,15 +171,4 @@ public class TouchControls : MonoBehaviour {
             }
     }
 
-    bool IsSpotSafeForTower()
-    {
-        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0, 0, 1);
-        Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, 0.01f);
-        foreach (Collider2D col in collisions)
-        {
-            if (col.tag == "Path" || col.tag == "Card" || col.tag == "Pause" || col.tag == "FastForward")
-                return false;
-        }
-        return true;
-    }
 }

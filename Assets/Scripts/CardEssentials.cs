@@ -8,11 +8,14 @@ public class CardEssentials : MonoBehaviour {
     public bool goldTower;
     public static bool goldPlaced;
     public UnityEngine.UI.Text goldCost;
+    public bool selected;
+    static float selectionScale = 1.5f;
+    Vector3 regularScale;
 
 	// Use this for initialization
 	void Start ()
     {
-	
+        regularScale = transform.localScale;
 	}
 	
 	// Update is called once per frame
@@ -25,5 +28,10 @@ public class CardEssentials : MonoBehaviour {
         }
 
         goldCost.text = cost.ToString();
+
+        if (selected)
+            transform.localScale = regularScale * selectionScale;
+        else
+            transform.localScale = regularScale;
 	}
 }

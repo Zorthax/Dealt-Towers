@@ -9,16 +9,30 @@ public class TowerEssentials : MonoBehaviour {
     public float bulletSpeed;
     public float radius;
     float delayTimer = 0;
+    Color naturalColor;
+    public bool onPath = false;
+    public bool pickedUp;
+    static float placeDelay = 0.2f;
+    float placeTimer = 0;
+    Vector3 lastPosition;
+    public int cost;
+    bool costApplied = false;
 
     public bool selected = false;
     GameObject radiusCircle;
     GameObject[] enemiesInSight;
 
-	// Use this for initialization
-	void Start ()
+    public bool goldTower;
+    public int goldProduced;
+    public float goldDelay;
+    float goldTimer;
+
+    // Use this for initialization
+    void Start ()
     {
         delayTimer = delayBetweenShots;
         selected = true;
+        naturalColor = GetComponent<SpriteRenderer>().color;
 	}
 	
 	// Update is called once per frame
@@ -26,9 +40,25 @@ public class TowerEssentials : MonoBehaviour {
     {
         CheckIfEnemyIsDead();
         DrawRadius();
-        Shooting();
-        
-	}
+        if (!pickedUp && !onPath) Shooting();
+        if (goldTower) GoldProduction();
+
+    }
+
+    void LateUpdate()
+    {
+        Placeable();
+    }
+
+    void GoldProduction()
+    {
+        if (goldTimer < goldDelay) goldTimer += ImportantStats.deltaTime;
+        else
+        {
+            goldTimer = 0;
+            ImportantStats.gold += goldProduced;
+        }
+    }
 
     void DrawRadius()
     {
@@ -128,6 +158,56 @@ public class TowerEssentials : MonoBehaviour {
                 }
                 enemiesInSight = temp;
             }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Path") onPath = true;
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.tag == "Path") onPath = false;
+    }
+
+    void Placeable()
+    {
+        if (selected && onPath) //Go red while being held above path
+        {
+            Color c = new Color(1, 0, 0, 1);
+            GetComponent<SpriteRenderer>().color = c;
+            placeTimer = placeDelay;
+        }
+        if (!selected && onPath) //Either reset position or destroy self when placed on path
+        {
+            if (placeTimer <= 0)
+            {
+                if (lastPosition != new Vector3(0, 0, 0))
+                {
+                    transform.position = lastPosition;
+                    GetComponent<SpriteRenderer>().color = naturalColor;
+                    pickedUp = false;
+                    onPath = false;
+                }
+                else
+                    Destroy(gameObject);
+            }
+            else
+            {
+                placeTimer -= Time.deltaTime;
+            }
+        }
+        if (!onPath) //Set last position
+        {
+            if (!costApplied)
+            {
+                ImportantStats.gold -= cost;
+                costApplied = true;
+            }
+            lastPosition = transform.position;
+            GetComponent<SpriteRenderer>().color = naturalColor;
+            placeTimer = 0;
         }
     }
 
